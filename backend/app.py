@@ -3,15 +3,6 @@ import pickle
 
 app = Flask(__name__)
 
-# Load the trained model and vectorizer
-with open('models/spam_model.pkl', 'rb') as f:
-    model = pickle.load(f)
-from flask import Flask, render_template, request
-import pickle
-import re
-
-app = Flask(__name__)
-
 # Load message detection model
 with open('models/spam_model.pkl', 'rb') as f:
     message_model = pickle.load(f)
@@ -85,87 +76,6 @@ def email_check():
         else:
             result = "This email looks GENUINE."
     return render_template('email_check.html', result=result)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-with open('models/vectorizer.pkl', 'rb') as f:
-    vectorizer = pickle.load(f)
-
-@app.route('/')
-def home():
-    return "SafetyNet+ backend is running!"
-
-@app.route('/recovery')
-def recovery():
-    return render_template('recovery.html')
-
-from flask import Flask, render_template, request
-import pickle
-
-app = Flask(__name__)
-
-# Load message detection model
-with open('models/spam_model.pkl', 'rb') as f:
-    message_model = pickle.load(f)
-with open('models/vectorizer.pkl', 'rb') as f:
-    message_vectorizer = pickle.load(f)
-
-# Load email detection model
-with open('models/email_model.pkl', 'rb') as f:
-    email_model = pickle.load(f)
-with open('models/email_vectorizer.pkl', 'rb') as f:
-    email_vectorizer = pickle.load(f)
-
-@app.route('/')
-def home():
-    return "SafetyNet+ backend is running!"
-
-@app.route('/recovery')
-def recovery():
-    return render_template('recovery.html')
-
-@app.route('/message-check', methods=['GET', 'POST'])
-def message_check():
-    result = None
-    if request.method == 'POST':
-        message = request.form['message']
-        message_vec = message_vectorizer.transform([message])
-        prediction = message_model.predict(message_vec)[0]
-        result = "This looks like a SCAM message! Be careful." if prediction == 1 else "This message looks SAFE."
-    return render_template('message_check.html', result=result)
-
-@app.route('/email-check', methods=['GET', 'POST'])
-def email_check():
-    result = None
-    if request.method == 'POST':
-        email_text = request.form['email_text']
-        email_vec = email_vectorizer.transform([email_text])
-        prediction = email_model.predict(email_vec)[0]
-        result = "This looks like a FAKE/SCAM email! Be careful." if prediction == 1 else "This email looks GENUINE."
-    return render_template('email_check.html', result=result)
-
-if __name__ == '__main__':
-    app.run(debug=True)@app.route('/message-check', methods=['GET', 'POST'])
-def message_check():
-    result = None
-    if request.method == 'POST':
-        message = request.form['message']
-        message_vec = vectorizer.transform([message])
-        prediction = model.predict(message_vec)[0]
-        result = "This looks like a SCAM message! Be careful." if prediction == 1 else "This message looks SAFE."
-    return render_template('message_check.html', result=result)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "SafetyNet+ backend is running!"
-
-@app.route('/recovery')
-def recovery():
-    return render_template('recovery.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
