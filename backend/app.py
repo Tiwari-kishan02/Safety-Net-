@@ -1,5 +1,10 @@
 from flask import Flask, render_template, request
 import pickle
+import pandas as pd
+
+# Load scam numbers database
+scam_db = pd.read_csv('datasets/scam_numbers.csv')
+scam_db['number'] = scam_db['number'].astype(str)
 
 app = Flask(__name__)
 
@@ -76,6 +81,20 @@ def email_check():
         else:
             result = "This email looks GENUINE."
     return render_template('email_check.html', result=result)
+
+@app.route('/number-check', methods=['GET', 'POST'])
+def number_check():
+    result = None
+    if request.method == 'POST':
+        number = request.form['number'].strip()
+        match = scam_db[scam_db['number'] == number]
+        if not match.empty:
+            category = match.iloc[0]['category']
+            reports = match.iloc[0]['reports']
+            result = f"WARNING: This number is reported as SCAM! Category: {category}, Reports: {reports}"
+        else:
+            result = "This number has no scam reports in our database. Still be cautious."
+    return render_template('number_check.html', result=result)
 
 if __name__ == '__main__':
     app.run(debug=True)
