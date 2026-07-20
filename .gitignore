@@ -3,4 +3,5 @@ venv/
 *.pyc
 .env
 *.db
-
+datasets/enron_spam_data.zip
+datasets/enron_spam_data.csv
