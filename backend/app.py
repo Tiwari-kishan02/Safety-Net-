@@ -2,10 +2,6 @@ from flask import Flask, render_template, request
 import pickle
 import pandas as pd
 
-# Load scam numbers database
-scam_db = pd.read_csv('datasets/scam_numbers.csv')
-scam_db['number'] = scam_db['number'].astype(str)
-
 app = Flask(__name__)
 
 # Load message detection model
@@ -19,6 +15,10 @@ with open('models/email_model.pkl', 'rb') as f:
     email_model = pickle.load(f)
 with open('models/email_vectorizer.pkl', 'rb') as f:
     email_vectorizer = pickle.load(f)
+
+# Load scam numbers database
+scam_db = pd.read_csv('datasets/scam_numbers.csv')
+scam_db['number'] = scam_db['number'].astype(str)
 
 # Red flag keywords/phrases commonly used in Indian scams
 RED_FLAGS = [
@@ -42,7 +42,7 @@ def check_red_flags(text):
 
 @app.route('/')
 def home():
-    return "SafetyNet+ backend is running!"
+    return render_template('home.html')
 
 @app.route('/recovery')
 def recovery():

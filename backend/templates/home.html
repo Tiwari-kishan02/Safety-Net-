@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SafetyNet+ Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: radial-gradient(circle at top, #1b2735 0%, #090a0f 100%);
+            min-height: 100vh;
+            padding: 60px 20px;
+            text-align: center;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        .logo-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .logo-glow {
+            font-size: 90px;
+            filter: drop-shadow(0 0 25px rgba(52, 152, 219, 0.7));
+        }
+        h1 {
+            font-size: 42px;
+            background: linear-gradient(90deg, #3498db, #8e44ad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        p.tagline {
+            color: #9aa5b1;
+            font-size: 17px;
+            margin-bottom: 50px;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px 25px;
+            width: 240px;
+            text-decoration: none;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(52, 152, 219, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+            opacity: 0;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: #3498db;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+        }
+        .card:hover::before {
+            opacity: 1;
+        }
+        .card .icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #ffffff;
+        }
+        .card p {
+            font-size: 14px;
+            color: #9aa5b1;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-wrap">
+        <span class="logo-glow">🛡️</span>
+    </div>
+    <h1>SafetyNet+</h1>
+    <p class="tagline">Real-time digital protection — verify contacts, detect phishing, and recover compromised accounts.</p>
+
+    <div class="card-container">
+        <a class="card" href="/number-check">
+            <span class="icon">📞</span>
+            <h3>Scam Number Checker</h3>
+            <p>Check if a phone number is reported as fraud.</p>
+        </a>
+        <a class="card" href="/message-check">
+            <span class="icon">💬</span>
+            <h3>Fake Message Detector</h3>
+            <p>Check if an SMS/OTP message is a scam.</p>
+        </a>
+        <a class="card" href="/email-check">
+            <span class="icon">📧</span>
+            <h3>Fake Email Detector</h3>
+            <p>Check if an email is genuine or fake.</p>
+        </a>
+        <a class="card" href="/recovery">
+            <span class="icon">🔐</span>
+            <h3>Account Recovery Assistant</h3>
+            <p>Guided steps to recover a hacked account.</p>
+        </a>
+    </div>
+</body>
+</html>
