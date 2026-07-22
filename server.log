@@ -1,0 +1,23 @@
+nohup: ignoring input
+ * Serving Flask app 'backend.app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.0.2.15:5000
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [22/Jul/2026 21:05:46] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:08:31] "GET /number-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:08:31] "GET /message-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:08:31] "GET /email-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:08:31] "GET /account-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:08:32] "[33mGET /check-red-flags HTTP/1.1[0m" 404 -
+127.0.0.1 - - [22/Jul/2026 21:08:49] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:08:51] "GET /number-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:09:12] "POST /account-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:12:41] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:12:43] "GET /message-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:12:47] "GET /email-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:13:14] "POST /email-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:24:42] "GET /email-check HTTP/1.1" 200 -
+127.0.0.1 - - [22/Jul/2026 21:24:45] "GET /message-check HTTP/1.1" 200 -

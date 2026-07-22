@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Scam Number Checker</title>
+    <title>Scam Number & Account Checker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
             padding: 40px;
         }
-        h1 {
-            color: #2c3e50;
-        }
+        h1 { color: #2c3e50; }
+        h2 { color: #2c3e50; margin-top: 40px; }
         input[type=text] {
             width: 100%;
             padding: 10px;
@@ -39,14 +38,24 @@
 </head>
 <body>
     <h1>Scam Number Checker</h1>
-    <form method="POST">
+    <form method="POST" action="/number-check">
         <input type="text" name="number" placeholder="Enter phone number (10 digits)"><br>
         <button type="submit">Check Number</button>
     </form>
+    {% if number_result %}
+        <div class="result {% if 'SCAM' in number_result or 'INVALID' in number_result %}scam{% else %}safe{% endif %}">
+            {{ number_result }}
+        </div>
+    {% endif %}
 
-    {% if result %}
-        <div class="result {% if 'SCAM' in result %}scam{% else %}safe{% endif %}">
-            {{ result }}
+    <h2>Bank Account Number Checker</h2>
+    <form method="POST" action="/account-check">
+        <input type="text" name="account" placeholder="Enter bank account number"><br>
+        <button type="submit">Check Account</button>
+    </form>
+    {% if account_result %}
+        <div class="result {% if 'SCAM' in account_result or 'INVALID' in account_result %}scam{% else %}safe{% endif %}">
+            {{ account_result }}
         </div>
     {% endif %}
 </body>
