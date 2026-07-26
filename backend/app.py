@@ -3,6 +3,8 @@ import pickle
 import pandas as pd
 from PIL import Image
 import pytesseract
+import phonenumbers
+from phonenumbers import geocoder, carrier
 
 app = Flask(__name__)
 
@@ -64,6 +66,8 @@ def analyze_phone_number(raw_number):
         return "INVALID INPUT: Please enter a valid 10-digit Indian number (with or without +91)."
 
 def check_indian_number(core):
+    if len(set(core)) == 1 or core in ("1234567890", "0123456789", "9876543210"):
+        return "INVALID: This number pattern is not a real Indian number."
     match = scam_db[scam_db['number'] == core]
     if not match.empty:
         category = match.iloc[0]['category']
@@ -132,24 +136,123 @@ def email_check_image():
 @app.route('/email-address-check', methods=['POST'])
 def email_address_check():
     address_result = None
-    sender_email = request.form['sender_email'].strip().lower()
-    if '@' not in sender_email or '.' not in sender_email.split('@')[-1]:
-        address_result = "SUSPICIOUS: This does not look like a valid email address format."
-    else:
-        domain = sender_email.split('@')[1]
-        found = [pattern for pattern in SUSPICIOUS_DOMAIN_PATTERNS if pattern in domain]
-        if found:
-            address_result = f"SUSPICIOUS: Domain matches known fake-bank/scam patterns: {', '.join(found)}"
+    if request.method == 'POST':
+        sender_email = request.form['sender_email'].strip().lower()
+        if '@' not in sender_email or '.' not in sender_email.split('@')[-1]:
+            address_result = "SUSPICIOUS: This does not look like a valid email address format."
         else:
-            address_result = "This email address does not match known scam domain patterns. Still verify the sender independently."
+            domain = sender_email.split('@')[1]
+            KNOWN_COMPANY_DOMAINS = {
+                "paypal.com": "PayPal (USA/Global)",
+                "tcs.com": "Tata Consultancy Services - TCS (India)",
+                "tecno-mobile.com": "Tecno Mobile (China/Global)",
+                "infosys.com": "Infosys (India)",
+                "microsoft.com": "Microsoft (USA/Global)",
+                "google.com": "Google (USA/Global)",
+                "wipro.com": "Wipro (India)",
+                "tatamotors.com": "Tata Motors (India)",
+                "reliance.com": "Reliance Industries (India)",
+                "hcltech.com": "HCLTech (India)",
+                "cognizant.com": "Cognizant (USA/India)",
+                "capgemini.com": "Capgemini (France/India)",
+                "accenture.com": "Accenture (Ireland/Global)",
+                "ibm.com": "IBM (USA/Global)",
+                "adobe.com": "Adobe (USA/Global)",
+                "apple.com": "Apple (USA/Global)",
+                "samsung.com": "Samsung (South Korea/Global)",
+                "airtel.in": "Bharti Airtel (India)",
+                "jio.com": "Reliance Jio (India)",
+                "vi.in": "Vodafone Idea (India)",
+                "ola.com": "Ola Cabs (India)",
+                "uber.com": "Uber (USA/Global)",
+                "zomato.com": "Zomato (India)",
+                "swiggy.com": "Swiggy (India)",
+                "paytm.com": "Paytm (India)",
+                "phonepe.com": "PhonePe (India)",
+                "flipkart.com": "Flipkart (India)",
+                "bankofbaroda.in": "Bank of Baroda (India)",
+                "kotak.com": "Kotak Mahindra Bank (India)",
+                "relianceada.com": "Reliance (India)",
+                "ril.com": "Reliance Industries (India)",
+                "iiflfinance.com": "IIFL Finance (India)",
+                "axisbank.com": "Axis Bank (India)",
+                "yesbank.in": "Yes Bank (India)",
+                "motilaloswal.com": "Motilal Oswal (India)",
+                "linkedin.com": "LinkedIn (USA/Global)",
+                "naukri.com": "Naukri.com (India)",
+                "indeed.com": "Indeed (USA/Global)",
+                "instagram.com": "Instagram / Meta (USA/Global)",
+                "facebook.com": "Facebook / Meta (USA/Global)",
+                "youtube.com": "YouTube / Google (USA/Global)",
+                "google.com": "Google (USA/Global)",
+                "amazon.com": "Amazon (USA/Global)",
+                "amazon.in": "Amazon India",
+                "paypal.com": "PayPal (USA/Global)",
+                "hdfcbank.com": "HDFC Bank (India)",
+                "icicibank.com": "ICICI Bank (India)",
+                "sbi.co.in": "State Bank of India (India)",
+                "tatacapital.com": "Tata Capital (India)",
+            }
+            found = [pattern for pattern in SUSPICIOUS_DOMAIN_PATTERNS if pattern in domain]
+            company_match = scam_db[scam_db['number'] == domain] if 'number' in scam_db.columns else None
+            if found:
+                address_result = f"SUSPICIOUS: Domain matches known fake-bank/scam patterns: {', '.join(found)}."
+            elif domain in KNOWN_COMPANY_DOMAINS:
+                company_name = KNOWN_COMPANY_DOMAINS[domain]
+                address_result = f"This is a recognized company domain: {company_name}. No scam patterns matched. Note: For contact numbers, always verify from the company's official website — do not trust numbers shared via email/SMS."
+            elif domain.endswith(".in") or domain.endswith(".co.in"):
+                address_result = "Domain suggests an India-based organization (unverified). No known scam patterns matched, but verify independently."
+            else:
+                address_result = "This domain is not in our known company database and no scam patterns matched. Still verify the sender independently."
     return render_template('email_check.html', address_result=address_result)
 
 @app.route('/number-check', methods=['GET', 'POST'])
 def number_check():
     number_result = None
     if request.method == 'POST':
-        number = request.form['number']
-        number_result = analyze_phone_number(number)
+        raw_number = request.form['number'].strip()
+        cleaned_check = raw_number.replace(" ", "").replace("-", "").replace("+91", "")
+        EMERGENCY_CODES = {
+            "100": "Police",
+            "101": "Fire Brigade",
+            "102": "Ambulance",
+            "108": "Ambulance / Emergency Response",
+            "112": "National Emergency Number (All-in-one)",
+            "1091": "Women Helpline",
+            "1098": "Child Helpline",
+            "1930": "Cyber Crime Helpline",
+            "139": "Railway Enquiry",
+            "1075": "COVID-19 Helpline",
+            "181": "Women Helpline (State)",
+        }
+        if cleaned_check in EMERGENCY_CODES:
+            number_result = f"VALID Emergency/Government Service Number: {EMERGENCY_CODES[cleaned_check]}. Country: India."
+        else:
+            try:
+                if raw_number.startswith("+"):
+                    parsed = phonenumbers.parse(raw_number, None)
+                else:
+                    parsed = phonenumbers.parse(raw_number, "IN")
+                is_valid = phonenumbers.is_valid_number(parsed)
+                country = geocoder.description_for_number(parsed, "en")
+                country_code = parsed.country_code
+                if not is_valid:
+                    number_result = "INVALID: This does not look like a valid phone number."
+                else:
+                    national_str = str(parsed.national_number)
+                    match = scam_db[scam_db['number'] == national_str]
+                    if len(set(national_str)) == 1 or national_str in ("1234567890", "0123456789", "9876543210"):
+                        number_result = "INVALID: This number pattern is not a real assigned Indian number."
+                    elif not match.empty:
+                        category = match.iloc[0]['category']
+                        reports = match.iloc[0]['reports']
+                        number_result = f"WARNING - SCAM REPORTED! Country: {country} (+{country_code}). Category: {category}, Reports: {reports}"
+                    elif national_str.startswith("1800") or national_str.startswith("1860"):
+                        number_result = f"VALID Toll-Free / Helpline number. Country: {country} (+{country_code}). This is a customer care / helpline number."
+                    else:
+                        number_result = f"VALID number. Country: {country} (+{country_code}). No scam reports in our database. Still be cautious."
+            except phonenumbers.phonenumberutil.NumberParseException:
+                number_result = "INVALID: Could not parse this number. Please check the format."
     return render_template('number_check.html', number_result=number_result)
 
 @app.route('/account-check', methods=['GET', 'POST'])
