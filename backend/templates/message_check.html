@@ -36,17 +36,19 @@
         }
         .safe { background-color: #d4edda; color: #155724; }
         .scam { background-color: #f8d7da; color: #721c24; }
+    .flag-red { background-color: #f8d7da; color: #721c24; }
+        .flag-green { background-color: #d4edda; color: #155724; }
     </style>
 </head>
 <body>
     <h1>Fake OTP/Message Detector</h1>
     <form method="POST">
-        <textarea name="message" placeholder="Paste the suspicious message here..."></textarea><br>
+        <textarea name="message" placeholder="Paste the suspicious message here...">{{ submitted_message if submitted_message else '' }}</textarea><br>
         <button type="submit">Check Message</button>
     </form>
 
     {% if result %}
-        <div class="result {% if 'SCAM' in result %}scam{% else %}safe{% endif %}">
+        <div class="result {% if 'SCAM' in result %}flag-red{% elif 'does not look like a real message' in result %}flag-red{% else %}flag-green{% endif %}">
             {{ result }}
         </div>
     {% endif %}

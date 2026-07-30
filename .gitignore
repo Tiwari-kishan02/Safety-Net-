@@ -1,9 +1,7 @@
 venv/
---pycache--/
+__pycache__/
 *.pyc
 .env
 *.db
+server.log
 datasets/enron_spam_data.zip
-datasets/enron_spam_data.csv
-datasets/enron_spam_data.zip
-datasets/enron_spam_data.csv

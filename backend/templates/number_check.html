@@ -34,23 +34,37 @@
         }
         .safe { background-color: #d4edda; color: #155724; }
         .scam { background-color: #f8d7da; color: #721c24; }
+    .flag-red { background-color: #f8d7da; color: #721c24; }
+    .flag-yellow { background-color: #fff3cd; color: #856404; }
+    .flag-green { background-color: #d4edda; color: #155724; }
+    .flag-invalid { background-color: #e2e3e5; color: #383d41; }
+    .flag-foreign { background-color: #fff3cd; color: #856404; }
     </style>
 </head>
 <body>
     <h1>Scam Number Checker</h1>
     <form method="POST" action="/number-check">
-        <input type="text" name="number" placeholder="Enter phone number (10 digits)"><br>
+        <input type="text" name="number" placeholder="Enter phone number (10 digits)" value="{{ submitted_number if submitted_number else '' }}"><br>
         <button type="submit">Check Number</button>
     </form>
     {% if number_result %}
-        <div class="result {% if 'SCAM' in number_result or 'INVALID' in number_result %}scam{% else %}safe{% endif %}">
-            {{ number_result }}
+        <div class="result flag-{{ number_result.flag|lower }}">
+            <strong>{{ number_result.flag }}</strong> — {{ number_result.message }}
         </div>
+        <table style="margin-top:10px; font-size:14px;">
+            <tr><td><b>Country/Region:</b></td><td>{{ number_result.country }}</td></tr>
+            <tr><td><b>Series Type:</b></td><td>{{ number_result.series_type }}</td></tr>
+            <tr><td><b>Number Length:</b></td><td>{{ number_result.number_length }} digits</td></tr>
+            <tr><td><b>Total Reports:</b></td><td>{{ number_result.reports }}</td></tr>
+            {% if number_result.category %}
+            <tr><td><b>Fraud Reason/Category:</b></td><td>{{ number_result.category }}</td></tr>
+            {% endif %}
+        </table>
     {% endif %}
 
     <h2>Bank Account Number Checker</h2>
     <form method="POST" action="/account-check">
-        <input type="text" name="account" placeholder="Enter bank account number"><br>
+        <input type="text" name="account" placeholder="Enter bank account number" value="{{ submitted_account if submitted_account else '' }}"><br>
         <button type="submit">Check Account</button>
     </form>
     {% if account_result %}
