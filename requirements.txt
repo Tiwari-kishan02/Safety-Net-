@@ -1,0 +1,7 @@
+Flask
+pandas
+phonenumbers
+Pillow
+pytesseract
+scikit-learn
+gunicorn
